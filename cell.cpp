@@ -1,32 +1,15 @@
 #include "cell.h"
 #include <iostream>
-Cell::Cell()
+Cell::Cell():MaskPos(0),SpirPos(0),AsPos(0),RodPos(0),CalPat(0),PSize(0)
 {
-    this->MaskPos = 0;
-    this->SpirPos = 0;
-    this->AsPos = 0;
-    this->RodPos = 0;
-    this->CalPat = 0;
-    this->PSize = 0;
 }
-Cell::Cell(int &CalPat)
+Cell::Cell(int &CalPat):MaskPos(0),SpirPos(0),AsPos(0),RodPos(0),CalPat(CalPat),PSize(0)
 {
-    this->MaskPos = 0;
-    this->SpirPos = 0;
-    this->AsPos = 0;
-    this->RodPos = 0;
-    this->CalPat = CalPat;
-    this->PSize = 0;
 }
 
-Cell::Cell(int &MaskPos, int &SpirPos, int &AsPos, int &RodPos, int &CalPat, float &PSize)
+Cell::Cell(int &MaskPos, int &SpirPos, int &AsPos, int &RodPos, int &CalPat, float &PSize):
+    MaskPos(MaskPos),SpirPos(SpirPos),AsPos(AsPos),RodPos(RodPos),CalPat(CalPat),PSize(PSize)
 {
-    this->MaskPos = MaskPos;
-    this->SpirPos = SpirPos;
-    this->AsPos = AsPos;
-    this->RodPos = RodPos;
-    this->CalPat = CalPat;
-    this->PSize = PSize;
 }
 
 void Cell::SetPar(int MaskPos, int SpirPos, int AsPos, int RodPos, int CalPat, float PSize)
