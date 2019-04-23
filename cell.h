@@ -10,10 +10,10 @@ private:
 public:
     Cell();
     Cell(int &CalPat);
-    Cell(int &MaskPos, int &SpirPos, int &AsPos, int &RodPos, int &CalPat, float &PSize);
+    Cell(int MaskPos, int SpirPos, int AsPos, int RodPos, int CalPat, float PSize);
     void SetPar(int MaskPos, int SpirPos,int AsPos,int RodPos,int CalPat,float PSize);
     void GetPar();
-    int GetCalPat();
+    int GetAsPos();
 };
 
 #endif // CELL_H

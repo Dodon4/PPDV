@@ -7,7 +7,7 @@ Cell::Cell(int &CalPat):MaskPos(0),SpirPos(0),AsPos(0),RodPos(0),CalPat(CalPat),
 {
 }
 
-Cell::Cell(int &MaskPos, int &SpirPos, int &AsPos, int &RodPos, int &CalPat, float &PSize):
+Cell::Cell(int MaskPos, int SpirPos, int AsPos, int RodPos, int CalPat, float PSize):
     MaskPos(MaskPos),SpirPos(SpirPos),AsPos(AsPos),RodPos(RodPos),CalPat(CalPat),PSize(PSize)
 {
 }
@@ -26,7 +26,7 @@ void Cell::GetPar()
 {
     std::cout<<MaskPos<<"\t"<<SpirPos<<"\t"<<AsPos<<"\t"<<RodPos<<"\t"<<CalPat<<"\t"<<PSize<<"\n";
 }
-int Cell::GetCalPat()
+int Cell::GetAsPos()
 {
-    return CalPat;
+    return AsPos;
 }

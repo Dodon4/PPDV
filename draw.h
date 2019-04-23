@@ -6,7 +6,8 @@
 #include <QPainter>
 #include <QWidget>
 #include <QDebug>
-#define PIECE_SIZE 40
+#include<cell.h>
+#define PIECE_SIZE 25
 
 class Draw : public QGraphicsPathItem
 {   // Q_OBJECT
@@ -15,21 +16,21 @@ class Draw : public QGraphicsPathItem
 
 public:
     enum Direction {North,East,South,West};
-    Draw(QVector< QVector <int> > SpirPos_);
-    Draw();
+   // Draw(QVector< QVector <int> > SpirPos_);
+    Draw(size_t rings,QVector< QVector <int> > colors,Cell* cells);
     void constructShape(QPainterPath& shape,QPoint Point);
-    void paint(QPainter * p,QWidget * widget);
+    void paint(QPainter * p,const QStyleOptionGraphicsItem *,QWidget *);
     qreal size;
     int puzzle_item_count;
-
+    QColor getColor(int AsPos);
 private:
+    int rings;
+    QVector< QVector <int> > colors;
+    Cell* cells;
 public slots:
-    QVector< QVector <int> > SpirPos;
+
     QPixmap m_image;
     QPoint m_coordinates;
 
 };
-inline uint qHash (const QPoint &key,uint seed)
-{
-return qHash(key.x(),seed)*key.y();}
 #endif // DRAW_H

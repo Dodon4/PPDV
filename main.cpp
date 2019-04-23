@@ -8,6 +8,8 @@
 #include <QVector>
 #include <QtMath>
 #include <cell.cpp>
+#include <QtAlgorithms>
+#include<QDebug>
 const QString allFileToString(QFile &aFile)//считывание файла
 {
     if (!aFile.open(QFile::ReadOnly | QFile::Text)) {
@@ -17,12 +19,12 @@ const QString allFileToString(QFile &aFile)//считывание файла
     QTextStream in(&aFile);
     return in.readAll();
 }
-int rows(QStringList aStringList){//получить количество строк
-    int x = aStringList.size() -1;
+size_t rows(QStringList aStringList){//получить количество строк
+    int x = aStringList.size();
     return x;
 }
-int col(QStringList aStringList){//получить количество столбцов
-    int y = aStringList.at((rows(aStringList)-6)/12).count(" ");
+size_t col(QStringList aStringList){//получить количество столбцов
+    int y = aStringList.at((rows(aStringList))/12).count(" ");
     return y;
 }
 void setDataToVector(QStringList aStringList,//преоброзование считанной информации в значения
@@ -31,18 +33,17 @@ void setDataToVector(QStringList aStringList,//преоброзование сч
 {
     int k=0;
     int x = rows(aStringList);
-    for (int i = 0; i < x; ++i) {
-        if(aStringList.at(i-k).front() == "-")
+    for (int i = 0; i < x; i+=x/6)
         {
               aStringList.removeAt(i-k);
               k++;
         }
-    }
-    x -= k;
+
     int y = col(aStringList);
-    if((x%12)!=0)
+        x -= k;
+    if((x % 12) != 0)
          y++;
-    std::cout << x<<":"<<y<<std::endl;
+
     for (int i = 0; i < x/6; ++i) {
         QVector<int> temp_vector;
         for (int j = 0; j < y; ++j) {
@@ -104,54 +105,120 @@ void printVector(const QVector< QVector <int> > &aVector)//вывод двуме
         std::cout << std::endl;
     }
 }
+void remove(QStringList &aStringList){
+    int x = rows(aStringList);
+    int k=0;
+    for (int i = 0; i < x; i+=x/6)
+        //if(aStringList.at(i-k).front() == "-")
+        {
+              aStringList.removeAt(i-k);
+              k++;
+        }
+}
+//Cell setDataToVector(QStringList aStringList,int i,int j)//преоброзование считанной информации в значения
+
+//{
+//    int step=rows(aStringList)/6;
+//    int y=col(aStringList);
+////    QString str=aStringList.at(i);
+////    std::cout<<str.split(" ").at(j).toInt();
+//Cell cells=Cell(aStringList.at(i).split(" ").at(j).toInt(),aStringList.at(i+step).split(" ").at(j).toInt(),
+//                aStringList.at(i+2*step).split(" ").at(j).toInt(),aStringList.at(i+3*step).split(" ").at(j).toInt(),
+//               aStringList.at(i+4*step).split(" ").at(j).toInt(),aStringList.at(i+5*step).split(" ").at(j).toFloat());
+////    if (!file.open(QFile::ReadOnly | QFile::Text)) {
+////        std::cout << "Error opening file!" << std::endl;
+////    }
+////    QTextStream in(&file);
+////    QString str="";
+////    str+=in.read(10);
+////    std::cout<<str.split(" ").at(0).toInt();
+//return cells;
+
+//}
+int nkas(QStringList aStringList){
+    QString str=aStringList.at(1);
+   if (str.size () > 0)
+       str.resize (str.size () - 1);
+   str.remove(0, 8);
+   return str.toInt();
+}
+size_t rings (int r){
+    size_t rings=(1 + sqrt(1 + 4 * (r - 1) / 3)) / 2;
+    return rings - 1;
+}
+void getColors(QStringList aStringList, QVector<QVector <int>> & colors){
+    int x = rows(aStringList)-1;
+    for (int i =  0 ; i < x; ++i) {
+        QVector<int> temp_vector;
+        for (int j = 0; j < 4; ++j) {
+            temp_vector.push_back(aStringList.at(i).split(";").at(j).toInt());
+        }
+        colors.push_back(temp_vector);
+    }
+}
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    QVector< QVector <float> > vector;
-    QFile file("C:\\ppdv\\test\\Cart360.txt");
+   QFile file("C:\\ppdv\\dataPhenix\\Cart.txt");
+   QFile file1("C:\\ppdv\\dataPhenix\\var");
+   QFile file2("C:\\ppdv\\dataPhenix\\colortype");
     QStringList aStringList=allFileToString(file).split("\n");
-    int b = (rows(aStringList)-6)/6;
-    int y = col(aStringList);
-
-    size_t k=0;
+    QStringList aStringList1=allFileToString(file1).split("\n");
+    QStringList aStringList2=allFileToString(file2).split("\n");
+    size_t x = (rows(aStringList)-6)/6;
+    size_t y = col(aStringList);
+    size_t k=x*(y+1);
+    QVector<QVector <int>> colors;
     QVector< QVector <int> > MaskPos;
     QVector< QVector <int> > SpirPos;
     QVector< QVector <int> > AsPos;
     QVector< QVector <int> > RodPos;
     QVector< QVector <int> > CalPat;
     QVector< QVector <float> > PSize;
+    getColors(aStringList2,colors);
+    //std::cout<<colors[0].size();
+//printVector(colors);
     setDataToVector(aStringList, MaskPos,SpirPos,AsPos,RodPos,CalPat,PSize);//засовываем считанную информацию по соответсвующим векторам
-    for(int i = 0; i < b; ++i)//количество элементов
-        for(int j = 0; j < y; ++j)
-            if(SpirPos[i][j]!=0)
-                k++;
-
-
     Cell *cells= new Cell[k];
-    int n =0;
-    size_t kk=0;
-    for(int i = 0;i < b; i++)//засовываем считанную информацию в класс ячеек
-         for(int j = 0; j < y; j++){
-             if(SpirPos[i][j] != 0) {
-                cells[n] = Cell(MaskPos[i][j],SpirPos[i][j],AsPos[i][j],RodPos[i][j],CalPat[i][j],PSize[i][j]);
-                n++;
-                if(cells[n].GetCalPat() != 1)
-                    kk++;
-                }
-            }
-     Cell *CalPatCell;
-    if(kk != 0){
-        CalPatCell = new Cell[kk];
-        for(size_t i = 0; i < k; i++)
-            if(cells[i].GetCalPat() != 1)
-                for(size_t j = 0; j < kk; j++){
-                    int p=cells[i].GetCalPat();
-                    CalPatCell[j]=Cell(p);
-                }
+//    Cell cell;
+    int kk=1;
+
+    for(size_t n = 0; n <= rings(nkas(aStringList1)); n++){
+    size_t j=x/2+n;
+    size_t i=y/2;
+    if(n==0){
+        //cell=setDataToVector(aStringList,i,j);
+        cells[0]=Cell(MaskPos[i][j],SpirPos[i][j],AsPos[i][j],RodPos[i][j],CalPat[i][j],PSize[i][j]);
+        //cell.GetPar();
     }
+    for(size_t el = 0; el < 6 * n; el++){
+       // cell=setDataToVector(aStringList,i,j);
+        cells[kk]=Cell(MaskPos[i][j],SpirPos[i][j],AsPos[i][j],RodPos[i][j],CalPat[i][j],PSize[i][j]);
+       // cell.GetPar();
+        if(el<n)
+            i--;
+        if(el>=n && el<2*n)
+            j--;
+        if(el>=2*n && el<3*n){
+            i++;
+            j--;
+        }
+        if(el>=3*n && el<4*n){
+            i++;
+            j++;
+        }
+        if(el>=4*n && el<5*n)
+            j++;
+        if(el>=5*n)
+            i--;
+        kk++;
+        }
+    }
+//    for(int i=0;i<kk;i++)
+//        cells[i].GetPar();
     QGraphicsView gv;//вывод отрисовки
     QGraphicsScene gs;
-    Draw* gs1=new Draw();
+    Draw* gs1=new Draw(rings(nkas(aStringList1)),colors,cells);
     gs.addItem(gs1);
     gv.setScene(&gs);
     gv.show();
